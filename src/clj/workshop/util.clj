@@ -18,3 +18,24 @@
   (for [char (Integer/toBinaryString anum)]
     (if (= char \1) 1 0)
     ))
+
+
+(def database (atom {}))
+
+(defprotocol FakeDB
+  (db-get [this key])
+  (db-put [this key value])
+  (db-close [this])
+  )
+
+(defn open-db-connection [url]
+  (println "Opening db connection")
+  (reify
+   FakeDB
+   (db-get [this key]
+           (get-in @database [url key]))
+   (db-put [this key value]
+           (swap! database assoc-in [url key] value))
+   (db-close [this]
+             (println "Closed db connection!"))))
+

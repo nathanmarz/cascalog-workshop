@@ -3,6 +3,7 @@
 
 (bootstrap-workshop)
 
+
 (defbufferiterop [chunked-average [chunk-size]] [tuples-iter]
   (for [chunk (partition chunk-size
                          (map first (iterator-seq tuples-iter)))]
