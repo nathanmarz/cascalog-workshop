@@ -117,3 +117,11 @@
   (c/first-n (description-word-count root) 100 :sort "?count" :reverse true))
 
 
+(defn much-higher-than-average-followers [root]
+  (let [fc (followers-count-data root)
+        [[avg]] (??<- [?avg] (fc _ ?fc) (c/avg ?fc :> ?avg))]
+    (<- [?person ?fc]
+        (fc ?person ?fc)
+        (> ?fc (* 2 avg))
+        (:distinct false))
+    ))
