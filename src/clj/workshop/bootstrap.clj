@@ -8,5 +8,6 @@
 ;;      (use (quote elephantdb.cascalog.core))
      (import (quote org.apache.hadoop.io.BytesWritable))
      (require (quote [org.danlarkin [json :as json]]))
+     (import (quote cascalog.ops.IdentityBuffer))
      (use (quote [workshop util]))
      ))

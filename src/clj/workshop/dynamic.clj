@@ -41,3 +41,12 @@
                             binary))]
     (reduce attach-chains chains-to-use)
     ))
+
+
+(defn global-sort [sq fields]
+  (let [out-fields (get-out-fields sq)
+        new-out-fields (v/gen-nullable-vars (count out-fields))]
+    (<- new-out-fields
+        (sq :>> out-fields)
+        (:sort :<< fields)
+        ((IdentityBuffer.) :<< out-fields :>> new-out-fields))))

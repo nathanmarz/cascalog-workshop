@@ -29,7 +29,12 @@
   ;; only works with var
   (age-filter #'big-age2))
 
-(defmapcatop )
+;; extract or filter pattern
+(defmapcatop extract-full-name [str]
+  (let [tokens (seq (.split str " "))]
+    (when (= 2 (count tokens))
+      tokens
+      )))
 
 (defaggregateop [first-n-agg [n]]
   ([] []) ;init function
@@ -68,3 +73,23 @@
      false)
   ([conn] (.db-close conn))
   )
+
+
+
+
+(defn query-planner-example []
+  (with-debug
+    (compile-flow
+     (stdout)
+     (<- [?delta ?count]
+         (age ?person1 ?age1)
+         (follows ?person1 ?person2)
+         (age ?person2 ?age2)
+         (* 2 ?age2 :> ?double-age2)
+         (< ?double-age2 ?age1)
+         (- ?age1 ?age2 :> ?delta)
+         (c/count ?count)
+         (> ?count ?delta)))))
+
+
+
