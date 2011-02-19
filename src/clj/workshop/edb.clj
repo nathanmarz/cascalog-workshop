@@ -57,7 +57,8 @@
   (elephant-tap out-dir
                 {:num-shards 4
                  :persistence-factory (JavaBerkDB.)}
-                {:updater (mk-clj-updater #'append-updater)}))
+                {:updater (mk-clj-updater #'append-updater)
+                 :deserializer (string-deserializer)}))
 
 (defn followers-list-edb! [out-dir]
   (?- (followers-tap out-dir)
@@ -79,3 +80,8 @@
                   (.getString "test" person)
                   .get_data)))
     ))
+
+
+
+;; Print out contents of an edb store on DFS:
+;; (?- (stdout) (name-vars (followers-tap "/tmp/edb1") ["?k" "?v"]))
