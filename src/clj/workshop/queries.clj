@@ -4,6 +4,17 @@
 
 (bootstrap-workshop)
 
+(defn extreme-twitter-users
+  "People who follow or are followed by at least 1000 people"
+  [root]
+  (let [x-followers (<- [?person]
+                        ((followers-count-data root) ?person ?count)
+                        (> ?count 1000))
+        x-following (<- [?person]
+                        ((following-count-data root) ?person ?count)
+                        (> ?count 1000))]
+    (union x-followers x-following)
+    ))
 
 (def dist-pairs (partition 2 1 [0 10 100 1000 10000 nil]))
 
@@ -124,18 +135,6 @@
         (fc ?person ?fc)
         (> ?fc (* 2 avg))
         (:distinct false))
-    ))
-
-(defn extreme-twitter-users
-  "People who follow or are followed by at least 1000 people"
-  [root]
-  (let [x-followers (<- [?person]
-                        ((followers-count-data root) ?person ?count)
-                        (> ?count 1000))
-        x-following (<- [?person]
-                        ((following-count-data root) ?person ?count)
-                        (> ?count 1000))]
-    (union x-followers x-following)
     ))
 
 

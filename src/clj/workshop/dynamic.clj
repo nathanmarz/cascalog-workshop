@@ -1,7 +1,35 @@
 (ns workshop.dynamic
+  (:use [cascalog playground])
   (:use [workshop bootstrap datastores]))
 
 (bootstrap-workshop)
+
+(defn emily-male-follows []
+  (let [person-var "?person"]
+    (<- [person-var]
+        (follows "emily" person-var)
+        (gender person-var "m"))))
+
+(defn emily-male-follows2 []
+  (let [out-vars (vec (v/gen-nullable-vars 1))]
+    (<- out-vars
+        (follows :>> (cons "emily" out-vars))
+        (gender :>> (conj out-vars "m")))
+    ))
+
+
+
+
+;; problems
+
+
+(defn global-sort [sq fields]
+  (let [out-fields (get-out-fields sq)
+        new-out-fields (v/gen-nullable-vars (count out-fields))]
+    (<- new-out-fields
+        (sq :>> out-fields)
+        (:sort :<< fields)
+        ((IdentityBuffer.) :<< out-fields :>> new-out-fields))))
 
 (defn chained-pairs-simple [pairs chain-length]
   {:pre [(>= chain-length 2)]}
@@ -43,10 +71,8 @@
     ))
 
 
-(defn global-sort [sq fields]
-  (let [out-fields (get-out-fields sq)
-        new-out-fields (v/gen-nullable-vars (count out-fields))]
-    (<- new-out-fields
-        (sq :>> out-fields)
-        (:sort :<< fields)
-        ((IdentityBuffer.) :<< out-fields :>> new-out-fields))))
+
+(def read-repair
+     (<- [!val !timestamp :> !out-val]
+         (:sort !timestamp) (:reverse true)
+         (c/limit [1] !val :> !out-val)))

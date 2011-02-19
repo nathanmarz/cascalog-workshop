@@ -138,6 +138,13 @@
 (defmapcatop duplicate [val]
   (repeat val val))
 
+;; (?<- (stdout) [?val] (integer ?i) (duplicate ?i :> ?val) (:distinct false))
+
+(defmapcatop [duplicate-n [n]] [val]
+  (repeat n val))
+
+;; (?<- (stdout) [?val] (integer ?i) (duplicate-n [5] ?i :> ?val) (:distinct false))
+
 (defparallelagg xor
   :init-var #'identity
   :combine-var #'bit-xor)
@@ -188,3 +195,8 @@
   :combine-var  #'choose-recent-val)
 
 ;; (?<- (stdout) [?person ?gender] (gender-fuzzy ?person ?g ?t) (most-recent-val ?g ?t :> ?gender _))
+
+
+;;alternate implementation of most-recent-val
+
+;; (?<- (stdout) [?person ?gender] (gender-fuzzy ?person ?g ?t) (:sort ?t) (:reverse true) (c/limit [1] ?g :> ?gender))
