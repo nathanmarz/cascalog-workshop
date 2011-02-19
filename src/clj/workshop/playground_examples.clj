@@ -4,75 +4,89 @@
 
 (bootstrap-workshop)
 
-(defmapop double-val [val]
-  (* 2 val))
 
-(defmapop double-and-triple [val]
-  [(* 2 val) (* 3 val)])
+;; Cascading-dbmigrate example
 
-(deffilterop big-age1 [val]
-  (> val 30))
+;; (def users-db-tap
+;;   (DBMigrateTap.
+;;     1
+;;     "com.mysql.jdbc.Driver"
+;;     (. Config BACKTYPE_DB)
+;;     (. Config MIGRATOR_USERNAME)
+;;     (. Config MIGRATOR_PASSWORD)
+;;     "users"
+;;     "user_id"
+;;     (into-array ["user_id" "account_type"])
+;;     ))
 
-(defn big-age2 [val]
-  (> val 30))
+;; Basics problems
 
-(defn age-filter [afilter]
-  (<- [?person ?age]
-      (age ?person ?age)
-      (afilter ?age)
+(defn half-decade-pairs []
+  (<- [?person1 ?person2]
+      (age ?person1 ?age1)
+      (age ?person2 ?age2)
+      (- ?age1 5 :> ?age2)
+      (:distinct false)
+      ))
+
+(defn safe-bucket-age [age]
+  (when age
+    (int (/ age 10))))
+
+(defn demographics-bucketing []
+  (<- [!age-bucket !!gender !!city ?count]
+      (age ?person !!age)
+      (safe-bucket-age !!age :> !age-bucket)
+      (gender ?person !!gender)
+      (location ?person _ _ !!city)
+      (c/count ?count)
+      ))
+
+
+(defmapcatop split [^String s]
+  (seq (.split s " ")))
+
+(defn to-lower [^String s]
+  (.toLowerCase s))
+
+(defn word-count []
+  (<- [?word ?count]
+      (sentence ?sentence)
+      ((c/comp #'to-lower split) ?sentence :> ?word)
+      (c/count ?count)
+      (>= ?count 3)))
+
+(defn followed-and-follows []
+  (let [follows-count (<- [?person ?count]
+                          (follows ?person _)
+                          (c/count ?count))
+        followers-count (<- [?person ?count]
+                            (follows _ ?person)
+                            (c/count ?count))]
+    (<- [?person]
+        (follows-count ?person ?fcount)
+        (>= ?fcount 2)
+        (followers-count ?person ?fcount2)
+        (>= ?fcount2 2)
+        (:distinct false))
+    ))
+
+(defn follow-3-years-younger1 []
+  (<- [?person1 ?person2]
+      (follows ?person1 ?person2)
+      (age ?person1 ?age1)
+      (age ?person2 ?age2)
+      (- ?age1 3 :> ?age2)
       (:distinct false)))
 
-(defn big-age1-query []
-  (age-filter big-age1))
-
-(defn big-age2-query []
-  ;; only works with var
-  (age-filter #'big-age2))
-
-;; extract or filter pattern
-(defmapcatop extract-full-name [str]
-  (let [tokens (seq (.split str " "))]
-    (when (= 2 (count tokens))
-      tokens
-      )))
-
-(defaggregateop [first-n-agg [n]]
-  ([] []) ;init function
-  ([res val] (if (< (count res) n) (conj res val) res)) ;aggregate function
-  ([res] res) ;extract function
-  )
-
-
-(defbufferop [first-n-buf [n]] [tuples]
-  (take n tuples)
-  )
-
-(defparallelagg xor
-  :init-var #'identity
-  :combine-var #'bit-xor)
-
-(defn split-xor-init [val]
-  (if (odd? val)
-    [val 0]
-    [0 val]))
-
-(defn split-xor-combine [odd1 even1 odd2 even2]
-  [(bit-xor odd1 odd2) (bit-xor even1 even2)])
-
-(defparallelagg split-xor
-  :init-var #'split-xor-init
-  :combine-var #'split-xor-combine
-  )
-
-
-;; this only works when running in local mode (just talking to in memory "database"
-(deffilterop [insert-ages-to-db [url]] {:stateful true}
-  ([] (open-db-connection url))
-  ([conn person age]
-     (.db-put conn person age)
-     false)
-  ([conn] (.db-close conn))
-  )
+(defn follow-3-years-younger2 []
+  (<- [?person1 ?person2]
+      (follows ?person1 ?person2)
+      (age ?person1 ?age1)
+      (age ?person2 ?age2)
+      (- ?age1 3 :> ?age1-younger)
+      (= ?age1-younger ?age2)
+      (:distinct false)))
 
 
 

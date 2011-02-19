@@ -125,3 +125,17 @@
         (> ?fc (* 2 avg))
         (:distinct false))
     ))
+
+(defn extreme-twitter-users
+  "People who follow or are followed by at least 1000 people"
+  [root]
+  (let [x-followers (<- [?person]
+                        ((followers-count-data root) ?person ?count)
+                        (> ?count 1000))
+        x-following (<- [?person]
+                        ((following-count-data root) ?person ?count)
+                        (> ?count 1000))]
+    (union x-followers x-following)
+    ))
+
+
