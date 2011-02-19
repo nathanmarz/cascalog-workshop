@@ -4,6 +4,12 @@
 
 (bootstrap-workshop)
 
+(defn people-who-follow []
+  (<- [?person]
+      (follows ?person _)
+      ;; (:distinct false)
+      ))
+
 
 ;; Cascading-dbmigrate example
 
@@ -20,6 +26,11 @@
 ;;     ))
 
 ;; Basics problems
+
+(defn male-or-old []
+  (let [male (<- [?person] (gender ?person "m") (:distinct false))
+        old (<- [?person] (age ?person ?age) (> ?age 30) (:distinct false))]
+    (union male old)))
 
 (defn half-decade-pairs []
   (<- [?person1 ?person2]
