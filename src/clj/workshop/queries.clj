@@ -73,7 +73,7 @@
         (c/count ?total))
     ))
 
-(defn comparitively-influential [root]
+(defn comparatively-influential [root]
   (let [total-retweets (total-retweets root)
         fc (followers-count-data root)]
     (<- [?bucket ?influencer ?rank]
