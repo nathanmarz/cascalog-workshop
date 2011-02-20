@@ -1,11 +1,10 @@
 (defproject cascalog-workshop "1.0.0"
   :source-path "src/clj"
-  :java-source-path "src/jvm"
   :aot :all
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
-		 [org.danlarkin/clojure-json "1.1-SNAPSHOT"]
-		 [cascalog "1.7.0-SNAPSHOT"]
+		             [org.danlarkin/clojure-json "1.1-SNAPSHOT"]
+		             [cascalog "1.7.0-SNAPSHOT"]
                  [elephantdb/elephantdb-cascalog "0.0.5"]
                  ]
   :dev-dependencies [
