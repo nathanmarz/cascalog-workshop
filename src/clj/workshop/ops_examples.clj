@@ -8,6 +8,7 @@
 
 ;; examples
 
+
 (defmapop double-val [val]
   (* 2 val))
 
@@ -85,10 +86,11 @@
 
 ;; Parameterized example
 
+
 (deffilterop [multiple-of [n]] [val]
   (= 0 (mod val n)))
 
-
+ 
 ;; controlling memory usage
 
 (defbufferiterop [chunked-average [chunk-size]] [tuples-iter]
@@ -132,8 +134,10 @@
 (defmapcatop extract-full-name [str]
   (let [tokens (seq (.split str " "))]
     (when (= 2 (count tokens))
-      tokens
+      [tokens]
       )))
+
+
 
 (defmapcatop duplicate [val]
   (repeat val val))
@@ -182,7 +186,8 @@
   ([state] [((comp first first) (keep-max-val state))]))
 
 
-;; (?<- (stdout) [?person ?gender] (gender-fuzzy ?person ?g _) (most-frequent-val ?g :> ?gender))
+;; (?<- (stdout) [?person ?gender] (gender-fuzzy ?person ?g _) (most-frequent-val ?g :> ?gender) (:sort ?g))
+
 
 (defn choose-recent-val [val1 time1 val2 time2]
   (if (> time2 time1)

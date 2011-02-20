@@ -16,7 +16,9 @@
     (union x-followers x-following)
     ))
 
-(def dist-pairs (partition 2 1 [0 10 100 1000 10000 nil]))
+(def dist-pairs
+     (partition 2 1
+                [0 10 100 1000 10000 100000 nil]))
 
 (defn- bucketize [count]
   (first
@@ -136,5 +138,4 @@
         (> ?fc (* 2 avg))
         (:distinct false))
     ))
-
 

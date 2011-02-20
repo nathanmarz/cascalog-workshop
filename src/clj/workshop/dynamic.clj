@@ -23,6 +23,7 @@
 ;; problems
 
 
+
 (defn global-sort [sq fields]
   (let [out-fields (get-out-fields sq)
         new-out-fields (v/gen-nullable-vars (count out-fields))]
@@ -41,6 +42,7 @@
                   [pairs :>> var-pair])
                 [[:distinct false]]))
     ))
+
 
 (defn attach-chains [chain1 chain2]
   (let [out1 (get-out-fields chain1)
