@@ -18,11 +18,7 @@
     ))
 
 
-
-
 ;; problems
-
-
 
 (defn global-sort [sq fields]
   (let [out-fields (get-out-fields sq)
