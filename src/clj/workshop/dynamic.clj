@@ -74,3 +74,10 @@
      (<- [!val !timestamp :> !out-val]
          (:sort !timestamp) (:reverse true)
          (c/limit [1] !val :> !out-val)))
+
+(defn select* [gen]
+  (let [outfields (get-out-fields gen)]
+    (predmacro [invars outvars]
+      {:pre [(= 0 (count (concat invars outvars)))]}
+      [[gen :>> outfields]]
+      )))

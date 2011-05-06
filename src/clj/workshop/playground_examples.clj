@@ -100,6 +100,17 @@
       (:distinct false)))
 
 
+(defn follow-no-one []
+  (<- [?person]
+      (person ?person)
+      (follows ?person _ :> false)
+      (:distinct false)))
+
+(defn no-follow-emily []
+  (<- [?person]
+      (person ?person)
+      (follows ?person "emily" :> false)
+      (:distinct false)))
 
 
 (defn query-planner-example []
@@ -156,3 +167,17 @@
               (name-vars dirty-ages ["?ts" "?person" "?age"])
               (name-vars follows ["?person" "?follows"])
               ))
+
+
+(defn young-sociability []
+  (<- [?person ?follows]
+      (age ?person ?age)
+      (< ?age 30)
+      (follows ?person _ :> ?follows)
+      (:distinct false)))
+
+(defn male-dirty-age-25 []
+  (<- [?person]
+      (gender ?person "m")
+      (dirty-ages _ ?person 25 :> true)
+      (:distinct false)))
