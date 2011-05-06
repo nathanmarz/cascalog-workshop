@@ -15,7 +15,7 @@
 
 ;; (def users-db-tap
 ;;   (DBMigrateTap.
-;;     1
+;;     64
 ;;     "com.mysql.jdbc.Driver"
 ;;     (. Config BACKTYPE_DB)
 ;;     (. Config MIGRATOR_USERNAME)
@@ -118,3 +118,41 @@
 
 
 
+
+;; multigroup example
+
+;; 2 reduce steps
+(defn person-follow-count []
+  (<- [?person ?count]
+      (person ?person)
+      (follows ?person !!person2)
+      (c/!count !!person2 :> ?count)))
+
+(defmultibufferop counter-multi [person follows]
+  [[(count follows)]])
+
+(defn person-follow-count-optimized []
+  (multigroup [?person] [?count]
+              counter-multi
+              (name-vars person ["?person"])
+              (name-vars follows ["?person" "?follows"])
+              ))
+
+;; Problems
+
+(defmultibufferop age-and-follower-count [ages followers]
+  (let [age (if (empty? ages)
+              nil
+              (nth (apply max-key first ages) 2))]
+    [[age
+      (count followers)]])
+  )
+
+;; person's most recent age from dirty-ages and number of followers
+
+(defn age+follower-count []
+  (multigroup [?person] [?age ?count]
+              age-and-follower-count
+              (name-vars dirty-ages ["?ts" "?person" "?age"])
+              (name-vars follows ["?person" "?follows"])
+              ))
