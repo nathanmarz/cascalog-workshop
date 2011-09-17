@@ -5,7 +5,7 @@
                  [org.clojure/clojure-contrib "1.2.0"]
 		             [org.danlarkin/clojure-json "1.1-SNAPSHOT"]
 		             [cascalog "1.8.1-SNAPSHOT"]
-                 [elephantdb/elephantdb-cascalog "0.0.5"]
+                 [elephantdb/elephantdb-cascalog "0.0.7"]
                  ]
   :dev-dependencies [
                      [org.apache.hadoop/hadoop-core "0.20.2-dev"]
